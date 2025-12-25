@@ -13,6 +13,7 @@ export const loginSchema = z.object({
       {
         message: "Please enter a valid email or username (min 3 characters)",
       }
+      // add authentication validation schema
     ),
   password: z
     .string()
