@@ -19,6 +19,7 @@ export default function RegisterPage() {
                 Join Medilink to get started
               </p>
             </div>
+        
 
             {/* Register Form */}
             <RegisterForm />
@@ -40,4 +41,5 @@ export default function RegisterPage() {
       </main>
     </div>
   );
+  // //add register form logic with validation
 }
