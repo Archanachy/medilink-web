@@ -26,7 +26,7 @@ export default function LoginForm() {
     router.push("/auth/dashboard");
     setIsLoading(false);
   };
-//refine auth pages layout and styling"
+
 
   return (
     <form
