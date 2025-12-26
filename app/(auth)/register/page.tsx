@@ -41,5 +41,4 @@ export default function RegisterPage() {
       </main>
     </div>
   );
-  // //add register form logic with validation
 }
