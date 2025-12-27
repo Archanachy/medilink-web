@@ -78,6 +78,8 @@ export default function LoginForm() {
                 viewBox="0 0 24 24"
               >
                 <path
+              // add user feedback and error handling to auth forms
+
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
