@@ -3,39 +3,50 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterFormData } from "../schema";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { handleRegister } from "@/lib/actions/auth-action";
 
 export default function RegisterForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    mode: "onSubmit",
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    console.log("Registration data:", data);
-    
-    // Redirect to login after successful registration
-    router.push("/login");
-    
-    setIsLoading(false);
+    setError(null);
+    startTransition(async () => {
+      try {
+        const response = await handleRegister(data);
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+        if (response.success) {
+          router.push("/login");
+        } else {
+          setError("Registration failed");
+        }
+      } catch (err: Error | any) {
+        setError(err.message || "Registration failed");
+      }
+    });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 w-full">
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
       {/* User Type Selection */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -196,10 +207,10 @@ export default function RegisterForm() {
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isSubmitting || pending}
         className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? "Creating Account..." : "Create Account"}
+        {isSubmitting || pending ? "Creating Account..." : "Create Account"}
       </button>
     </form>
   );
