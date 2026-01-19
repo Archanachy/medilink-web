@@ -3,28 +3,42 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormData } from "../schema";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { handleLogin } from "@/lib/actions/auth-action";
 
 export default function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Login data:", data);
-    router.push("/auth/dashboard");
-    setIsLoading(false);
+    setError(null);
+    startTransition(async () => {
+      try {
+        const response = await handleLogin(data);
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+        if (response.success) {
+          router.push("/auth/dashboard");
+        } else {
+          setError("Login failed");
+        }
+      } catch (err: Error | any) {
+        setError(err.message || "Login failed");
+      }
+    });
   };
 
 
@@ -33,6 +47,9 @@ export default function LoginForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="w-full space-y-6"
     >
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
       {/* Email / Username */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -78,7 +95,8 @@ export default function LoginForm() {
                 viewBox="0 0 24 24"
               >
                 <path
-              // add user feedback and error handling to auth forms
+                
+             
 
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -127,10 +145,10 @@ export default function LoginForm() {
       {/* Submit */}
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isSubmitting || pending}
         className="w-full rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isLoading ? "Logging in..." : "Log In"}
+        {isSubmitting || pending ? "Logging in..." : "Log In"}
       </button>
     </form>
   );
