@@ -6,9 +6,11 @@ import { registerSchema, type RegisterFormData } from "../schema";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { handleRegister } from "@/lib/actions/auth-action";
+import { useToast } from "@/app/context/ToastContext";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { addToast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,13 +33,20 @@ export default function RegisterForm() {
         if (!response.success) {
           throw new Error(response.message);
         }
-        if (response.success) {
-          router.push("/login");
+        if (response.success && response.data) {
+          // Add success toast
+          addToast('Registration successful! Welcome!', 'success');
+          
+          // Redirect to login page after registration
+          router.push('/login');
         } else {
           setError("Registration failed");
+          addToast("Registration failed", 'error');
         }
       } catch (err: Error | any) {
-        setError(err.message || "Registration failed");
+        const errorMsg = err.message || "Registration failed";
+        setError(errorMsg);
+        addToast(errorMsg, 'error');
       }
     });
   };
