@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { handleLogout } from "@/lib/actions/auth-action";
+import { useToast } from "@/app/context/ToastContext";
 
 export default function DashboardPage() {
-  const router = useRouter();
+  const { addToast } = useToast();
 
-  const handleLogout = () => {
-    router.push("/login");
+  const handleLogoutClick = async () => {
+    addToast('Logged out successfully', 'success');
+    await handleLogout();
   };
 
   return (
@@ -24,7 +26,7 @@ export default function DashboardPage() {
               <span className="text-xl font-semibold text-gray-900">Medilink</span>
             </div>
 
-            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors">
+            <button onClick={handleLogoutClick} className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
