@@ -16,6 +16,10 @@ export const setAuthToken = async (token: string) => {
     cookieStore.set({
         name: 'auth_token',
         value: token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
     })
 }
 export const getAuthToken = async () => {
@@ -27,6 +31,10 @@ export const setUserData = async (userData: UserData) => {
     cookieStore.set({
         name: 'user_data',
         value: JSON.stringify(userData),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
     })
 }
 export const getUserData = async (): Promise<UserData | null> => {
@@ -37,6 +45,16 @@ export const getUserData = async (): Promise<UserData | null> => {
 
 export const clearAuthCookies = async () => {
     const cookieStore = await cookies();
-    cookieStore.delete('auth_token');
-    cookieStore.delete('user_data');
+    cookieStore.set({
+        name: 'auth_token',
+        value: '',
+        maxAge: 0,
+        path: '/',
+    });
+    cookieStore.set({
+        name: 'user_data',
+        value: '',
+        maxAge: 0,
+        path: '/',
+    });
 }
