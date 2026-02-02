@@ -6,9 +6,11 @@ import { loginSchema, type LoginFormData } from "../schema";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/lib/actions/auth-action";
+import { useToast } from "@/app/context/ToastContext";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { addToast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -30,13 +32,24 @@ export default function LoginForm() {
         if (!response.success) {
           throw new Error(response.message);
         }
-        if (response.success) {
-          router.push("/auth/dashboard");
+        if (response.success && response.data) {
+          // Add welcome toast
+          addToast(`Welcome back, ${response.data.firstName}!`, 'success');
+          
+          // Redirect based on role
+          if (response.data.role === 'admin') {
+            router.push('/admin/users');
+          } else {
+            router.push('/auth/dashboard');
+          }
         } else {
           setError("Login failed");
+          addToast("Login failed", 'error');
         }
       } catch (err: Error | any) {
-        setError(err.message || "Login failed");
+        const errorMsg = err.message || "Login failed";
+        setError(errorMsg);
+        addToast(errorMsg, 'error');
       }
     });
   };

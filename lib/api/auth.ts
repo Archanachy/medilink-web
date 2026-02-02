@@ -12,7 +12,7 @@ export const register = async (registerData: RegisterData) => {
             username: registerData.username,
             password: registerData.password,
             confirmPassword: registerData.confirmPassword,
-            role: registerData.userType === 'doctor' ? 'admin' : 'user'
+            role: registerData.userType
         }
         const response = await axios.post(API.AUTH.REGISTER, transformedData)
         return response.data

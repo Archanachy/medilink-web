@@ -1,7 +1,53 @@
+"use client";
+
 import Link from "next/link";
 import Header from "./(public)/components/Header";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getUserData } from "@/lib/cookie";
 
 export default function HomePage() {
+  const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    const checkAuthAndRedirect = async () => {
+      try {
+        const user = await getUserData();
+        
+        if (user) {
+          // User is logged in - redirect based on role
+          if (user.role === 'admin') {
+            router.push('/admin/users');
+          } else {
+            // For 'user', 'patient', 'doctor' roles
+            router.push('/auth/dashboard');
+          }
+        } else {
+          // No user logged in, show home page
+          setIsChecking(false);
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        // Stay on home page if error
+        setIsChecking(false);
+      }
+    };
+
+    checkAuthAndRedirect();
+  }, [router]);
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white flex flex-col">
       <Header />
