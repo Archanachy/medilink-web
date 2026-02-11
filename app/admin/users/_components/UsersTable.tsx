@@ -70,6 +70,7 @@ export default function UsersTable({ users, onUserDeleted }: UsersTableProps) {
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Role</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Phone</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Joined</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Actions</th>
                             </tr>
                         </thead>
@@ -103,6 +104,13 @@ export default function UsersTable({ users, onUserDeleted }: UsersTableProps) {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600">{user.phone || '-'}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric'
+                                            }) : '-'}
+                                        </td>
                                         <td className="px-6 py-4 text-sm">
                                             <div className="flex gap-3">
                                                 <Link
