@@ -42,8 +42,8 @@ export async function proxy(request: NextRequest) {
                 return NextResponse.redirect(new URL('/', request.url));
             }
             
-            // User route protection (both 'user' and 'admin' can access)
-            if (isUserRoute && user.role !== 'user' && user.role !== 'admin') {
+            // User route protection ('user', 'patient', and 'admin' can access)
+            if (isUserRoute && user.role !== 'user' && user.role !== 'patient' && user.role !== 'admin') {
                 console.log(`[Proxy] Redirecting to / - unauthorized role for user route`);
                 return NextResponse.redirect(new URL('/', request.url));
             }
