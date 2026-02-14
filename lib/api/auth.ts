@@ -33,3 +33,21 @@ export const login = async (loginData: LoginData) => {
         throw new Error(error.response?.data?.message || error.message || 'Login failed')
     }
 }
+
+export const forgotPassword = async (email: string) => {
+    try {
+        const response = await axios.post(API.AUTH.FORGOT_PASSWORD, { email })
+        return response.data
+    } catch (error: Error | any) {
+        throw new Error(error.response?.data?.message || error.message || 'Forgot password failed')
+    }
+}
+
+export const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
+    try {
+        const response = await axios.post(API.AUTH.RESET_PASSWORD, { token, newPassword, confirmPassword })
+        return response.data
+    } catch (error: Error | any) {
+        throw new Error(error.response?.data?.message || error.message || 'Reset password failed')
+    }
+}

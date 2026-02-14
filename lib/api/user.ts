@@ -20,9 +20,16 @@ export const createUser = async (formData: FormData) => {
 };
 
 // Admin API - Get All Users
-export const getUsers = async () => {
+export const getUsers = async (params?: { page?: number; limit?: number; search?: string; sort?: string }) => {
     try {
-        const response = await axiosInstance.get(API.ADMIN.USERS);
+        const query = new URLSearchParams();
+        if (params?.page) query.set('page', String(params.page));
+        if (params?.limit) query.set('limit', String(params.limit));
+        if (params?.search) query.set('search', params.search);
+        if (params?.sort) query.set('sort', params.sort);
+
+        const url = query.toString() ? `${API.ADMIN.USERS}?${query.toString()}` : API.ADMIN.USERS;
+        const response = await axiosInstance.get(url);
         return response.data;
     } catch (error: Error | any) {
         throw new Error(error.response?.data?.message || error.message || 'Fetch users failed');
