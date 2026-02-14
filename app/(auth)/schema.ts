@@ -59,6 +59,24 @@ export type LoginData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type RegisterData = z.infer<typeof registerSchema>;
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(6, "Reset token is required"),
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(100, "Password is too long"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
 // Profile update schema
 export const profileUpdateSchema = z.object({
     firstName: z.string().min(2, "First name must be at least 2 characters").optional(),
@@ -117,4 +135,6 @@ export const updateUserSchema = z.object({
 export type ProfileUpdateData = z.infer<typeof profileUpdateSchema>;
 export type CreateUserData = z.infer<typeof createUserSchema>;
 export type UpdateUserData = z.infer<typeof updateUserSchema>;
+export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 

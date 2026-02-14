@@ -1,25 +1,34 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { getUserById } from "@/lib/api/user";
 import EditUserForm from "./_components/EditUserForm";
 import { useToast } from "@/app/context/ToastContext";
 import Breadcrumb from "@/app/components/Breadcrumb";
 
-export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
-    const resolvedParams = use(params);
+export default function EditUserPage() {
+    const params = useParams<{ id: string }>();
     const { addToast } = useToast();
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!params?.id) {
+            const errorMsg = 'Invalid user id';
+            setError(errorMsg);
+            addToast(errorMsg, 'error');
+            setLoading(false);
+            return;
+        }
+
         const loadUser = async () => {
             try {
                 setLoading(true);
                 setError(null);
-                const response = await getUserById(resolvedParams.id);
+                const response = await getUserById(params.id);
                 if (response.success) {
                     setUser(response.data);
                 } else {
@@ -37,7 +46,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         };
 
         loadUser();
-    }, [resolvedParams.id, addToast]);
+    }, [params?.id, addToast]);
 
     if (loading) {
         return (
@@ -69,7 +78,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 items={[
                     { label: 'Admin', href: '/admin' },
                     { label: 'Users', href: '/admin/users' },
-                    { label: `${user.firstName} ${user.lastName}`, href: `/admin/users/${resolvedParams.id}` },
+                    { label: `${user.firstName} ${user.lastName}`, href: `/admin/users/${params?.id}` },
                     { label: 'Edit' },
                 ]}
             />

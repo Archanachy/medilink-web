@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormData } from "../schema";
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/lib/actions/auth-action";
 import { useToast } from "@/app/context/ToastContext";
@@ -150,9 +151,9 @@ export default function LoginForm() {
 
       {/* Forgot password */}
       <div className="text-left">
-        <a className="cursor-pointer text-sm text-blue-600 hover:underline">
+        <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
           Forgot Password ?
-        </a>
+        </Link>
       </div>
 
       {/* Submit */}

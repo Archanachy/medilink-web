@@ -1,5 +1,5 @@
 "use server";
-import { login, register } from "@/lib/api/auth"
+import { forgotPassword, login, register, resetPassword } from "@/lib/api/auth"
 import { LoginData, RegisterData } from "@/app/(auth)/schema"
 import { setAuthToken, setUserData, clearAuthCookies } from "../cookie"
 import { redirect } from "next/navigation";
@@ -64,4 +64,40 @@ export const handleLogin = async (data: LoginData) => {
 export const handleLogout = async () => {
     await clearAuthCookies();
     return redirect('/login');
+}
+
+export const handleForgotPassword = async (email: string) => {
+    try {
+        const response = await forgotPassword(email)
+        if (response.success) {
+            return {
+                success: true,
+                message: response.message || 'Reset email sent'
+            }
+        }
+        return {
+            success: false,
+            message: response.message || 'Forgot password failed'
+        }
+    } catch (error: Error | any) {
+        return { success: false, message: error.message || 'Forgot password action failed' }
+    }
+}
+
+export const handleResetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
+    try {
+        const response = await resetPassword(token, newPassword, confirmPassword)
+        if (response.success) {
+            return {
+                success: true,
+                message: response.message || 'Password reset successfully'
+            }
+        }
+        return {
+            success: false,
+            message: response.message || 'Reset password failed'
+        }
+    } catch (error: Error | any) {
+        return { success: false, message: error.message || 'Reset password action failed' }
+    }
 }
