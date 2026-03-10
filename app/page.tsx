@@ -18,9 +18,13 @@ export default function HomePage() {
         if (user) {
           // User is logged in - redirect based on role
           if (user.role === 'admin') {
-            router.push('/admin/users');
+            router.push('/admin/dashboard');
+          } else if (user.role === 'doctor') {
+            router.push('/doctor/dashboard');
+          } else if (user.role === 'patient') {
+            router.push('/patient/dashboard');
           } else {
-            // For 'user', 'patient', 'doctor' roles
+            // Default fallback
             router.push('/auth/dashboard');
           }
         } else {
